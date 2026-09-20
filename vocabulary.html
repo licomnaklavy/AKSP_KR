@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой словарь - Лангуаге</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/vocabulary.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="index.html" class="logo-link">
+                        <span class="logo-icon">🌐</span>
+                        <span class="logo-text">Лангуаге</span>
+                    </a>
+                    <nav class="nav">
+                        <a href="index.html" class="nav-link">Главная</a>
+                        <a href="courses.html" class="nav-link">Курсы</a>
+                        <a href="vocabulary.html" class="nav-link active">Словарь</a>
+                        <a href="profile.html" class="nav-link">Профиль</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Мой словарь</h1>
+                    <p>Управляй словарями и словами</p>
+                </div>
+
+                <div class="dicts-manager">
+                    <div class="dicts-header">
+                        <h3>Мои словари</h3>
+                        <button class="btn btn-small btn-outline" id="createDictBtn">+ Новый словарь</button>
+                    </div>
+                    <div class="dicts-list" id="dictsList"></div>
+                </div>
+
+                <div class="vocabulary-controls">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Поиск слов...">
+                        <button class="search-btn" id="searchBtn">Найти</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" id="importBtn">Импорт</button>
+                        <button class="btn btn-outline" id="clearBtn">Очистить всё</button>
+                        <button class="btn btn-outline" id="testBtn">Тестирование</button>
+                        <button class="btn btn-primary" id="addWordBtn">+ Добавить слово</button>
+                    </div>
+                </div>
+
+                <div class="words-list" id="wordsList"></div>
+            </div>
+        </main>
+
+        <!-- Модалка добавления/редактирования слова -->
+        <div class="modal" id="wordModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Добавить слово</h3>
+                    <button class="modal-close" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Выберите словарь:</label>
+                        <select id="wordDictSelect" class="form-input"></select>
+                    </div>
+                    <input type="text" id="wordInput" placeholder="Слово на английском" class="form-input">
+                    <input type="text" id="translationInput" placeholder="Перевод" class="form-input">
+                    <textarea id="exampleInput" placeholder="Пример использования" rows="2" class="form-textarea"></textarea>
+                    <input type="hidden" id="editWordId" value="">
+                    <input type="hidden" id="editDictId" value="">
+                    <button class="btn btn-primary" id="saveWordBtn" style="width: 100%;">Сохранить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модалка настроек тестирования -->
+        <div class="modal" id="testSettingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Настройки тестирования</h3>
+                    <button class="modal-close" id="closeTestSettingsBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Выберите словари для теста:</label>
+                        <div id="dictsForTest" class="dict-checkboxes"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Режим формирования вопросов:</label>
+                        <select id="questionMode" class="form-input">
+                            <option value="strict">Строгий</option>
+                            <option value="selected_dicts">Расширенный из выбранных словарей</option>
+                            <option value="all_dicts">Полный</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Количество слов в тесте:</label>
+                        <select id="testCountType" class="form-input">
+                            <option value="preset">Выбрать из списка</option>
+                            <option value="custom">Своё значение</option>
+                        </select>
+                        <div id="presetCountContainer">
+                            <select id="testCountPreset" class="form-input" style="margin-top: 10px;">
+                                <option value="5">5 слов</option>
+                                <option value="10" selected>10 слов</option>
+                                <option value="15">15 слов</option>
+                                <option value="20">20 слов</option>
+                                <option value="all">Все слова</option>
+                            </select>
+                        </div>
+                        <div id="customCountContainer" style="display: none;">
+                            <input type="number" id="testCountCustom" class="form-input" placeholder="Введите количество слов" style="margin-top: 10px;" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Режим перевода:</label>
+                        <select id="testMode" class="form-input">
+                            <option value="en2ru">Английский → Русский</option>
+                            <option value="ru2en">Русский → Английский</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="startTestBtn" style="width: 100%;">Начать тестирование</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Остальные модалки -->
+        <div class="modal" id="createDictModal">
+            <div class="modal-content small">
+                <div class="modal-header">
+                    <h3>Новый словарь</h3>
+                    <button class="modal-close" id="closeCreateDictBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="newDictName" placeholder="Название словаря" class="form-input">
+                    <div class="form-actions">
+                        <button class="btn btn-outline" id="cancelCreateDictBtn">Отмена</button>
+                        <button class="btn btn-primary" id="confirmCreateDictBtn">Создать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="importModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Импорт слов</h3>
+                    <button class="modal-close" id="closeImportModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Выберите словарь для импорта:</label>
+                        <select id="importDictSelect" class="form-input"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Формат файла:</label>
+                        <p class="format-example">слово|перевод|пример использования</p>
+                        <p class="format-example">Пример: apple|яблоко|I eat an apple</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Выберите файл (.txt):</label>
+                        <input type="file" id="importFile" accept=".txt" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Или вставьте текст:</label>
+                        <textarea id="importText" rows="6" class="form-textarea"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-outline" id="cancelImportBtn">Отмена</button>
+                        <button class="btn btn-primary" id="confirmImportBtn">Импортировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="clearConfirmModal">
+            <div class="modal-content small">
+                <div class="modal-header">
+                    <h3>Подтверждение</h3>
+                    <button class="modal-close" id="closeClearModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите удалить ВСЕ слова из выбранных словарей?</p>
+                    <p style="color: var(--danger); font-size: 0.9rem; margin-top: 10px;">Это действие нельзя отменить!</p>
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button class="btn btn-outline" id="cancelClearBtn">Отмена</button>
+                        <button class="btn btn-danger" id="confirmClearBtn">Да, удалить всё</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <p>© 2026 Лангуаге</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/api-emulation.js"></script>
+    <script type="module" src="js/vocabulary.js"></script>
+</body>
+</html>

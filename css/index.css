@@ -1,0 +1,58 @@
+.hero {
+    text-align: center;
+    padding: 60px 0 40px;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.hero .accent {
+    color: var(--primary);
+}
+
+.hero p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 40px 0;
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.feature-icon {
+    height: 0;
+}
+
+.feature-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    .features {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+}

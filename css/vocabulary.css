@@ -1,0 +1,364 @@
+/* Управление словарями */
+.dicts-manager {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dicts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.dicts-header h3 {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--gray);
+}
+
+.btn-small {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+}
+
+.dicts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dict-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--bg);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.dict-item:hover {
+    background: var(--gray-light);
+}
+
+.dict-item.selected {
+    background: rgba(108, 92, 231, 0.15);
+    border: 1px solid var(--primary);
+}
+
+.dict-item input {
+    margin: 0;
+    cursor: pointer;
+}
+
+.dict-name {
+    font-weight: 500;
+}
+
+.dict-count {
+    color: var(--gray);
+    font-size: 0.75rem;
+}
+
+.dict-rename-btn, .dict-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+    opacity: 0.6;
+}
+
+.dict-rename-btn:hover, .dict-delete-btn:hover {
+    opacity: 1;
+    background: var(--gray-light);
+}
+
+.dict-rename-btn {
+    color: var(--warning);
+}
+
+.dict-delete-btn {
+    color: var(--danger);
+}
+
+.word-dict-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: var(--gray);
+    margin-bottom: 6px;
+    padding: 2px 8px;
+    background: var(--bg);
+    border-radius: 12px;
+}
+
+.page-header {
+    text-align: center;
+    padding: 20px 0 15px;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+}
+
+.page-header p {
+    color: #666;
+    margin-top: 5px;
+}
+
+.vocabulary-controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-bar {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    max-width: 400px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-light);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.search-btn {
+    padding: 10px 20px;
+    background: var(--gray-light);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.search-btn:hover {
+    background: var(--gray);
+    color: var(--white);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.words-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.word-item {
+    background: var(--white);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.word-info {
+    flex: 1;
+}
+
+.word-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.word-translation {
+    color: var(--primary);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.word-example {
+    color: #888;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.word-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.word-actions button {
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.word-actions button:hover {
+    background: var(--gray-light);
+}
+
+.word-actions .edit-btn {
+    color: var(--primary);
+}
+
+.word-actions .delete-btn {
+    color: var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 50px;
+    color: #999;
+    background: var(--white);
+    border-radius: 8px;
+}
+
+.format-example {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin: 5px 0;
+    font-family: monospace;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    background: var(--danger-dark);
+}
+
+.dict-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid var(--gray-light);
+    border-radius: 8px;
+    background: var(--white);
+}
+
+.dict-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.dict-checkbox:hover {
+    background: var(--gray-light);
+}
+
+.dict-checkbox input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.dict-checkbox input:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.dict-checkbox span {
+    font-size: 0.9rem;
+}
+
+.dict-word-count {
+    color: var(--gray);
+    font-size: 0.75rem;
+}
+
+.dict-empty-warning {
+    color: var(--danger);
+    font-size: 0.7rem;
+    margin-left: auto;
+}
+
+@media (max-width: 600px) {
+    .vocabulary-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-bar {
+        max-width: none;
+    }
+    
+    .action-buttons {
+        justify-content: stretch;
+    }
+    
+    .action-buttons button {
+        flex: 1;
+    }
+    
+    .word-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .word-actions {
+        justify-content: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    .dicts-list {
+        flex-direction: column;
+    }
+}
