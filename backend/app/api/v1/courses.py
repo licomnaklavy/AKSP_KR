@@ -47,7 +47,6 @@ def create_course(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_roles(UserRole.teacher, UserRole.admin)),
 ) -> Course:
-    """Создать курс. Только teacher/admin."""
     course = Course(
         title=payload.title,
         description=payload.description,
@@ -115,7 +114,6 @@ def enroll(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> dict:
-    """Записаться на курс."""
     course = db.get(Course, course_id)
     if not course:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Course not found")
@@ -187,3 +185,37 @@ def create_lesson(
     db.commit()
     db.refresh(lesson)
     return lesson
+
+
+# ---------- Students of course ----------
+@router.get("/{course_id}/students")
+def course_students(
+    course_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(UserRole.teacher, UserRole.admin)),
+) -> list[dict]:
+    """Список студентов, записанных на курс (только автор курса или admin)."""
+    course = db.get(Course, course_id)
+    if not course:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Course not found")
+
+    if course.author_id != current_user.id and current_user.role != UserRole.admin:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Not your course")
+
+    enrollments = (
+        db.query(Enrollment)
+        .filter(Enrollment.course_id == course_id)
+        .all()
+    )
+
+    result = []
+    for e in enrollments:
+        student = db.get(User, e.student_id)
+        if student:
+            result.append({
+                "student_id": student.id,
+                "email": student.email,
+                "full_name": student.full_name,
+                "enrolled_at": e.enrolled_at,
+            })
+    return result

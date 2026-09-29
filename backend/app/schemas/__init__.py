@@ -92,7 +92,6 @@ class QuestionCreate(BaseModel):
 class TestCreate(BaseModel):
     title: str
     passing_score: float = 60.0
-    max_attempts: int = 0
     questions: list[QuestionCreate]
 
 
@@ -120,14 +119,12 @@ class TestOut(BaseModel):
     lesson_id: int
     title: str
     passing_score: float
-    max_attempts: int
     created_at: datetime
     questions: list[QuestionOut]
 
 
 # ---------- Attempts ----------
 class AttemptStart(BaseModel):
-    """То, что видит студент при старте попытки (без правильных ответов)."""
     attempt_id: int
     test_id: int
     test_title: str
@@ -153,29 +150,30 @@ class AttemptResult(BaseModel):
     status: str
 
 
-# ---------- Grades ----------
-class GradeCreate(BaseModel):
-    student_id: int
+# ---------- Progress ----------
+class LessonResult(BaseModel):
+    lesson_id: int
+    lesson_title: str
+    completed: bool
+    has_test: bool
+    percent: float | None = None
+    best_score: float | None = None
+    max_score: float | None = None
+
+
+class CourseProgress(BaseModel):
     course_id: int
-    value: float
-    comment: str = ""
+    course_title: str
+    lessons: list[LessonResult]
+    average_percent: float
+    completed_lessons: int
+    total_lessons: int
 
 
-class GradeOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    student_id: int
-    course_id: int
-    value: float
-    comment: str
-    created_at: datetime
-
-
-class JournalRow(BaseModel):
-    """Строка журнала: студент и его оценки по курсу."""
+class StudentProgressRow(BaseModel):
     student_id: int
     student_email: EmailStr
     student_full_name: str
-    grades: list[GradeOut]
-    average: float
+    completed_lessons: int
+    total_lessons: int
+    average_percent: float

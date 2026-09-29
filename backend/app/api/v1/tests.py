@@ -56,10 +56,9 @@ def create_test(
         lesson_id=lesson_id,
         title=payload.title,
         passing_score=payload.passing_score,
-        max_attempts=payload.max_attempts,
     )
     db.add(test)
-    db.flush()  # чтобы получить test.id до коммита
+    db.flush()
 
     for q in payload.questions:
         if not q.options:
@@ -103,14 +102,13 @@ def get_test(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> Test:
-    """Студенту тут видны правильные ответы — только для преподавателя."""
     test = db.get(Test, test_id)
     if not test:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Test not found")
     return test
 
 
-# ---------- Старт попытки (student) ----------
+# ---------- Старт попытки ----------
 @router.post("/{test_id}/start", response_model=AttemptStart)
 def start_attempt(
     test_id: int,
@@ -121,22 +119,6 @@ def start_attempt(
     if not test:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Test not found")
 
-    if test.max_attempts > 0:
-        used = (
-            db.query(TestAttempt)
-            .filter(
-                TestAttempt.test_id == test_id,
-                TestAttempt.student_id == current_user.id,
-                TestAttempt.status == "finished",
-            )
-            .count()
-        )
-        if used >= test.max_attempts:
-            raise HTTPException(
-                status.HTTP_400_BAD_REQUEST,
-                f"Max attempts reached ({test.max_attempts})",
-            )
-
     attempt = TestAttempt(
         test_id=test_id,
         student_id=current_user.id,
@@ -145,7 +127,6 @@ def start_attempt(
     db.commit()
     db.refresh(attempt)
 
-    # Отдаём вопросы без is_correct
     safe_questions = [
         {
             "id": q.id,

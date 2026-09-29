@@ -26,9 +26,12 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     courses: Mapped[list["Course"]] = relationship(back_populates="author")
-    enrollments: Mapped[list["Enrollment"]] = relationship(back_populates="student", cascade="all, delete-orphan")
-    attempts: Mapped[list["TestAttempt"]] = relationship(back_populates="student", cascade="all, delete-orphan")
-    grades: Mapped[list["Grade"]] = relationship(back_populates="student", cascade="all, delete-orphan")
+    enrollments: Mapped[list["Enrollment"]] = relationship(
+        back_populates="student", cascade="all, delete-orphan"
+    )
+    attempts: Mapped[list["TestAttempt"]] = relationship(
+        back_populates="student", cascade="all, delete-orphan"
+    )
 
 
 class Course(Base):
@@ -48,7 +51,9 @@ class Course(Base):
         cascade="all, delete-orphan",
         order_by="Lesson.order_index",
     )
-    enrollments: Mapped[list["Enrollment"]] = relationship(back_populates="course", cascade="all, delete-orphan")
+    enrollments: Mapped[list["Enrollment"]] = relationship(
+        back_populates="course", cascade="all, delete-orphan"
+    )
 
 
 class Lesson(Base):
@@ -61,7 +66,9 @@ class Lesson(Base):
     order_index: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     course: Mapped[Course] = relationship(back_populates="lessons")
-    tests: Mapped[list["Test"]] = relationship(back_populates="lesson", cascade="all, delete-orphan")
+    tests: Mapped[list["Test"]] = relationship(
+        back_populates="lesson", cascade="all, delete-orphan"
+    )
 
 
 class Enrollment(Base):
@@ -71,7 +78,7 @@ class Enrollment(Base):
     student_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     course_id: Mapped[int] = mapped_column(ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
     enrolled_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-    completed_lessons: Mapped[str] = mapped_column(Text, default="")
+    completed_lesson_ids: Mapped[str] = mapped_column(Text, default="")  # CSV id уроков
 
     student: Mapped[User] = relationship(back_populates="enrollments")
     course: Mapped[Course] = relationship(back_populates="enrollments")
@@ -84,7 +91,6 @@ class Test(Base):
     lesson_id: Mapped[int] = mapped_column(ForeignKey("lessons.id", ondelete="CASCADE"), nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     passing_score: Mapped[float] = mapped_column(Float, default=60.0, nullable=False)
-    max_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     lesson: Mapped[Lesson] = relationship(back_populates="tests")
@@ -93,7 +99,9 @@ class Test(Base):
         cascade="all, delete-orphan",
         order_by="Question.id",
     )
-    attempts: Mapped[list["TestAttempt"]] = relationship(back_populates="test", cascade="all, delete-orphan")
+    attempts: Mapped[list["TestAttempt"]] = relationship(
+        back_populates="test", cascade="all, delete-orphan"
+    )
 
 
 class Question(Base):
@@ -137,7 +145,9 @@ class TestAttempt(Base):
 
     test: Mapped[Test] = relationship(back_populates="attempts")
     student: Mapped[User] = relationship(back_populates="attempts")
-    answers: Mapped[list["TestAnswer"]] = relationship(back_populates="attempt", cascade="all, delete-orphan")
+    answers: Mapped[list["TestAnswer"]] = relationship(
+        back_populates="attempt", cascade="all, delete-orphan"
+    )
 
 
 class TestAnswer(Base):
@@ -151,16 +161,3 @@ class TestAnswer(Base):
     points_awarded: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
 
     attempt: Mapped[TestAttempt] = relationship(back_populates="answers")
-
-
-class Grade(Base):
-    __tablename__ = "grades"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    student_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    course_id: Mapped[int] = mapped_column(ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
-    value: Mapped[float] = mapped_column(Float, nullable=False)
-    comment: Mapped[str] = mapped_column(Text, default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-
-    student: Mapped[User] = relationship(back_populates="grades")
