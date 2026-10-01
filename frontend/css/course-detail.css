@@ -39,7 +39,48 @@
     color: white;
 }
 
-/* Выпадающий список для выбора урока */
+.course-badge.draft {
+    background: var(--gray);
+    color: var(--white);
+}
+
+.course-description-full {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 25px;
+    background: var(--white);
+    padding: 20px 25px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.enroll-cta {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.enroll-cta p {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 1rem;
+}
+
+.lesson-completed-badge {
+    display: inline-block;
+    background: rgba(0, 184, 148, 0.15);
+    color: var(--success);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
 .lessons-selector {
     background: var(--white);
     border-radius: 16px;
@@ -135,39 +176,360 @@
     justify-content: center;
 }
 
+/* ---- Блок теста ---- */
+.lesson-test-block {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 25px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.lesson-test-block h3 {
+    margin-bottom: 12px;
+    color: var(--primary);
+}
+
+.lesson-test-block .test-info {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+.test-passed {
+    color: var(--success-dark);
+    font-weight: 500;
+}
+
+.test-failed {
+    color: var(--danger);
+    font-weight: 500;
+}
+
+.test-info-sub {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* ---- Несколько тестов на уроке (студент) ---- */
+.test-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.test-item-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.test-item-row:first-of-type {
+    padding-top: 0;
+}
+
+.test-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+.test-item-info .test-info-sub {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* ---- Панель учителя ---- */
+.teacher-panel {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 25px 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.teacher-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.teacher-panel-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--dark);
+}
+
+.teacher-panel-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.teacher-panel h3 {
+    font-size: 1rem;
+    margin: 25px 0 12px;
+    color: var(--dark);
+}
+
+.teacher-lessons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.teacher-lesson-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.teacher-lesson-info {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.teacher-lesson-meta {
+    color: var(--gray);
+    font-size: 0.8rem;
+    margin-left: 6px;
+}
+
+.teacher-lesson-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.students-table th,
+.students-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.students-table th {
+    color: var(--gray);
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.students-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---- Модалка: блоки вопросов ---- */
+.question-block {
+    border: 1px solid var(--gray-light);
+    border-radius: 12px;
+    padding: 15px 18px;
+    margin-bottom: 15px;
+    background: var(--bg);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.question-header strong {
+    font-size: 0.95rem;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.option-row input[type="radio"] {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.option-row .option-text {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* ---- Превью теста ---- */
+.test-preview-block {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--gray-light);
+}
+
+.test-preview-block:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.test-preview-header {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.test-preview-header h4 {
+    margin-bottom: 6px;
+    color: var(--dark);
+    font-size: 1.05rem;
+}
+
+.test-preview-header .test-info {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.test-questions-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.test-question-preview {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.tqp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.tqp-points {
+    font-size: 0.8rem;
+    color: var(--gray);
+    white-space: nowrap;
+}
+
+.tqp-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tqp-options li {
+    padding: 8px 12px;
+    background: var(--white);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--dark);
+}
+
+.tqp-options li.correct {
+    background: rgba(0, 184, 148, 0.12);
+    color: var(--success-dark);
+    font-weight: 500;
+}
+
+/* ---- Кнопка «Добавить ещё тест» ---- */
+.tests-list-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
 @media (max-width: 600px) {
     .course-header {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .course-header h1 {
         font-size: 1.2rem;
     }
-    
+
     .lessons-selector {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .lesson-select {
         max-width: 100%;
     }
-    
+
     .theory-content {
         padding: 20px;
     }
-    
+
     .theory-content h2 {
         font-size: 1.1rem;
     }
-    
+
     .course-actions {
         flex-direction: column;
     }
-    
+
     .course-actions .btn {
         width: 100%;
         min-width: auto;
+    }
+
+    .teacher-panel-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .teacher-panel-actions {
+        justify-content: stretch;
+    }
+
+    .teacher-panel-actions .btn {
+        flex: 1;
+    }
+
+    .teacher-lesson-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .students-table {
+        font-size: 0.8rem;
     }
 }

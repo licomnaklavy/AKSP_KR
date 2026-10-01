@@ -20,28 +20,14 @@
                         <a href="index.html" class="nav-link">Главная</a>
                         <a href="courses.html" class="nav-link">Курсы</a>
                         <a href="vocabulary.html" class="nav-link">Словарь</a>
-                        <a href="profile.html" class="nav-link active">Профиль</a>
                     </nav>
                 </div>
             </div>
         </header>
 
         <main class="main">
-            <div class="container">
-                <div class="profile-header">
-                    <div class="profile-avatar">A</div>
-                    <div class="profile-info">
-                        <h1>Мой профиль</h1>
-                        <p id="profileSubtitle">Статистика обучения</p>
-                    </div>
-                </div>
-
-                <div class="profile-stats-card" id="profileStats"></div>
-
-                <div class="achievements-section">
-                    <h2>Достижения</h2>
-                    <div class="achievements-grid" id="achievementsGrid"></div>
-                </div>
+            <div class="container" id="profileContainer">
+                <div class="empty-state">Загрузка...</div>
             </div>
         </main>
 
@@ -52,8 +38,8 @@
         </footer>
     </div>
 
-    <script src="js/api-emulation.js"></script>
-    <script src="js/notifications.js"></script>
-    <script type="module" src="js/profile.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/profile.js"></script>
 </body>
 </html>

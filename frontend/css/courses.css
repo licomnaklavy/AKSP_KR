@@ -120,6 +120,14 @@
     background: var(--danger);
 }
 
+.course-level.draft {
+    background: var(--gray);
+    color: var(--white);
+    top: 12px;
+    right: auto;
+    left: 12px;
+}
+
 .course-content {
     padding: 20px;
     display: flex;
@@ -200,19 +208,19 @@
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .course-image {
         height: 140px;
     }
-    
+
     .search-bar {
         max-width: 100%;
     }
-    
+
     .search-btn {
         padding: 12px 18px;
     }
-    
+
     .course-meta {
         font-size: 0.75rem;
         gap: 10px;

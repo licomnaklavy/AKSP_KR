@@ -1,13 +1,20 @@
-import { updateAchievements } from './achievements.js';
+// frontend/js/vocabulary.js
+// Страница словаря. Работает через API бэкенда.
 
 let currentSearch = '';
 let selectedDicts = [];
 let allDictionaries = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (!api.isAuthenticated()) {
+        window.location.href = "login.html";
+        return;
+    }
+
     await loadDictionaries();
     await loadVocabulary();
-    
+
+    // Обработчики кнопок
     document.getElementById('addWordBtn').onclick = () => openAddModal();
     document.getElementById('testBtn').onclick = () => openTestSettings();
     document.getElementById('importBtn').onclick = () => openImportModal();
@@ -23,13 +30,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
     document.getElementById('createDictBtn').onclick = () => openCreateDictModal();
-    
+
     document.getElementById('closeModalBtn').onclick = () => closeModal();
     document.getElementById('saveWordBtn').onclick = saveWord;
-    
+
     document.getElementById('closeTestSettingsBtn').onclick = () => closeTestSettingsModal();
     document.getElementById('startTestBtn').onclick = () => startTest();
-    
+
     document.getElementById('testCountType').onchange = (e) => {
         const presetContainer = document.getElementById('presetCountContainer');
         const customContainer = document.getElementById('customCountContainer');
@@ -41,53 +48,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             customContainer.style.display = 'block';
         }
     };
-    
+
     document.getElementById('closeCreateDictBtn').onclick = () => closeCreateDictModal();
     document.getElementById('cancelCreateDictBtn').onclick = () => closeCreateDictModal();
     document.getElementById('confirmCreateDictBtn').onclick = () => createDictionary();
-    
+
     const createModal = document.getElementById('createDictModal');
     createModal.addEventListener('click', (e) => {
         if (e.target === createModal) closeCreateDictModal();
     });
-    
+
     const importModal = document.getElementById('importModal');
     const closeImportBtn = document.getElementById('closeImportModalBtn');
     const cancelImportBtn = document.getElementById('cancelImportBtn');
     const confirmImportBtn = document.getElementById('confirmImportBtn');
-    
+
     if (closeImportBtn) closeImportBtn.onclick = () => closeImportModal();
     if (cancelImportBtn) cancelImportBtn.onclick = () => closeImportModal();
     if (confirmImportBtn) confirmImportBtn.onclick = () => importWords();
-    
+
     if (importModal) {
         importModal.addEventListener('click', (e) => {
             if (e.target === importModal) closeImportModal();
         });
     }
-    
+
     const clearModal = document.getElementById('clearConfirmModal');
     const closeClearBtn = document.getElementById('closeClearModalBtn');
     const cancelClearBtn = document.getElementById('cancelClearBtn');
     const confirmClearBtn = document.getElementById('confirmClearBtn');
-    
+
     if (closeClearBtn) closeClearBtn.onclick = () => closeClearConfirmModal();
     if (cancelClearBtn) cancelClearBtn.onclick = () => closeClearConfirmModal();
     if (confirmClearBtn) confirmClearBtn.onclick = () => clearAllWords();
-    
+
     if (clearModal) {
         clearModal.addEventListener('click', (e) => {
             if (e.target === clearModal) closeClearConfirmModal();
         });
     }
-    
+
     const wordModal = document.getElementById('wordModal');
     if (wordModal) {
         wordModal.addEventListener('click', (e) => {
             if (e.target === wordModal) closeModal();
         });
     }
-    
+
     const testSettingsModal = document.getElementById('testSettingsModal');
     if (testSettingsModal) {
         testSettingsModal.addEventListener('click', (e) => {
@@ -96,22 +103,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// ---------------------------------------------------------------------------
+// Загрузка словарей с бэкенда
+// ---------------------------------------------------------------------------
 async function loadDictionaries() {
-    const response = await api.getDictionaries();
-    allDictionaries = response.data;
-    
-    const savedSelected = localStorage.getItem('language_selected_dicts');
+    try {
+        allDictionaries = await api.getDictionaries();
+    } catch (err) {
+        alert("Не удалось загрузить словари: " + err.message);
+        allDictionaries = [];
+        return;
+    }
+
+    const savedSelected = localStorage.getItem('lms_selected_dicts');
     if (savedSelected) {
         selectedDicts = JSON.parse(savedSelected);
     } else {
         selectedDicts = allDictionaries.map(d => d.id);
-        localStorage.setItem('language_selected_dicts', JSON.stringify(selectedDicts));
+        localStorage.setItem('lms_selected_dicts', JSON.stringify(selectedDicts));
     }
-    
+
     const dictsList = document.getElementById('dictsList');
     dictsList.innerHTML = allDictionaries.map(dict => `
         <label class="dict-item ${selectedDicts.includes(dict.id) ? 'selected' : ''}">
-            <input type="checkbox" class="dict-checkbox-item" value="${dict.id}" 
+            <input type="checkbox" class="dict-checkbox-item" value="${dict.id}"
                 ${selectedDicts.includes(dict.id) ? 'checked' : ''}>
             <span class="dict-name">${escapeHtml(dict.name)}</span>
             <span class="dict-count">(${dict.words.length} слов)</span>
@@ -119,63 +134,64 @@ async function loadDictionaries() {
             <button class="dict-delete-btn" data-id="${dict.id}">🗑</button>
         </label>
     `).join('');
-    
+
     document.querySelectorAll('.dict-checkbox-item').forEach(cb => {
         cb.onchange = () => {
             const dictId = parseInt(cb.value);
             if (cb.checked) {
-                if (!selectedDicts.includes(dictId)) {
-                    selectedDicts.push(dictId);
-                }
+                if (!selectedDicts.includes(dictId)) selectedDicts.push(dictId);
             } else {
                 selectedDicts = selectedDicts.filter(id => id !== dictId);
             }
-            localStorage.setItem('language_selected_dicts', JSON.stringify(selectedDicts));
+            localStorage.setItem('lms_selected_dicts', JSON.stringify(selectedDicts));
             cb.closest('.dict-item').classList.toggle('selected', cb.checked);
             loadVocabulary();
         };
     });
-    
+
     document.querySelectorAll('.dict-rename-btn').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
-            const dictId = btn.dataset.id;
-            const dictName = btn.dataset.name;
-            openRenameDictModal(dictId, dictName);
+            openRenameDictModal(btn.dataset.id, btn.dataset.name);
         };
     });
-    
+
     document.querySelectorAll('.dict-delete-btn').forEach(btn => {
         btn.onclick = async (e) => {
             e.stopPropagation();
             const dictId = parseInt(btn.dataset.id);
             if (confirm('Удалить этот словарь? Все слова из него будут потеряны.')) {
-                await api.deleteDictionary(dictId);
-                await loadDictionaries();
-                await loadVocabulary();
-                updateAchievements();
+                try {
+                    await api.deleteDictionary(dictId);
+                    selectedDicts = selectedDicts.filter(id => id !== dictId);
+                    localStorage.setItem('lms_selected_dicts', JSON.stringify(selectedDicts));
+                    await loadDictionaries();
+                    await loadVocabulary();
+                } catch (err) {
+                    alert("Ошибка удаления: " + err.message);
+                }
             }
         };
     });
-    
+
     updateDictSelects();
 }
 
 function updateDictSelects() {
     const wordDictSelect = document.getElementById('wordDictSelect');
     if (wordDictSelect) {
-        wordDictSelect.innerHTML = allDictionaries.map(dict => 
+        wordDictSelect.innerHTML = allDictionaries.map(dict =>
             `<option value="${dict.id}">${escapeHtml(dict.name)} (${dict.words.length} слов)</option>`
         ).join('');
     }
-    
+
     const importDictSelect = document.getElementById('importDictSelect');
     if (importDictSelect) {
-        importDictSelect.innerHTML = allDictionaries.map(dict => 
+        importDictSelect.innerHTML = allDictionaries.map(dict =>
             `<option value="${dict.id}">${escapeHtml(dict.name)} (${dict.words.length} слов)</option>`
         ).join('');
     }
-    
+
     const dictsForTest = document.getElementById('dictsForTest');
     if (dictsForTest) {
         dictsForTest.innerHTML = allDictionaries.map(dict => `
@@ -194,35 +210,31 @@ async function loadVocabulary() {
         document.getElementById('wordsList').innerHTML = '<div class="empty-state">Не выбран ни один словарь. Выберите словари для отображения.</div>';
         return;
     }
-    
+
     let wordsWithDict = [];
-    
+
     for (const dictId of selectedDicts) {
         const dict = allDictionaries.find(d => d.id === dictId);
         if (dict) {
             for (const word of dict.words) {
-                wordsWithDict.push({
-                    ...word,
-                    dictId: dict.id,
-                    dictName: dict.name
-                });
+                wordsWithDict.push({ ...word, dictId: dict.id, dictName: dict.name });
             }
         }
     }
-    
+
     if (currentSearch) {
-        wordsWithDict = wordsWithDict.filter(w => 
-            w.word.toLowerCase().includes(currentSearch) || 
+        wordsWithDict = wordsWithDict.filter(w =>
+            w.word.toLowerCase().includes(currentSearch) ||
             w.translation.toLowerCase().includes(currentSearch)
         );
     }
-    
+
     const container = document.getElementById('wordsList');
     if (wordsWithDict.length === 0) {
         container.innerHTML = '<div class="empty-state">Слова не найдены. Добавьте первое слово или импортируйте из файла</div>';
         return;
     }
-    
+
     container.innerHTML = wordsWithDict.map(word => `
         <div class="word-item" data-id="${word.id}" data-dict="${word.dictId}">
             <div class="word-info">
@@ -237,23 +249,29 @@ async function loadVocabulary() {
             </div>
         </div>
     `).join('');
-    
+
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.onclick = () => openEditModal(btn.dataset.id, btn.dataset.dict);
     });
-    
+
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.onclick = async () => {
             if (confirm('Удалить это слово?')) {
-                await api.deleteWordFromDict(btn.dataset.id, btn.dataset.dict);
-                await loadDictionaries();
-                await loadVocabulary();
-                updateAchievements();
+                try {
+                    await api.deleteWord(btn.dataset.dict, btn.dataset.id);
+                    await loadDictionaries();
+                    await loadVocabulary();
+                } catch (err) {
+                    alert("Ошибка: " + err.message);
+                }
             }
         };
     });
 }
 
+// ---------------------------------------------------------------------------
+// Модалки
+// ---------------------------------------------------------------------------
 function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Добавить слово';
     document.getElementById('wordInput').value = '';
@@ -261,18 +279,18 @@ function openAddModal() {
     document.getElementById('exampleInput').value = '';
     document.getElementById('editWordId').value = '';
     document.getElementById('editDictId').value = '';
-    
+
     if (allDictionaries.length > 0) {
         document.getElementById('wordDictSelect').value = allDictionaries[0].id;
     }
-    
+
     openModal();
 }
 
-async function openEditModal(wordId, dictId) {
+function openEditModal(wordId, dictId) {
     const dict = allDictionaries.find(d => d.id === parseInt(dictId));
     const word = dict?.words.find(w => w.id === parseInt(wordId));
-    
+
     if (word) {
         document.getElementById('modalTitle').textContent = 'Редактировать слово';
         document.getElementById('wordDictSelect').value = dictId;
@@ -292,23 +310,24 @@ async function saveWord() {
     const example = document.getElementById('exampleInput').value.trim();
     const editWordId = document.getElementById('editWordId').value;
     const editDictId = document.getElementById('editDictId').value;
-    
+
     if (!word || !translation) {
         alert('Заполните слово и перевод');
         return;
     }
-    
-    if (editWordId && editDictId) {
-        await api.deleteWordFromDict(editWordId, editDictId);
-        await api.addWordToDict(dictId, { word, translation, example });
-    } else {
-        await api.addWordToDict(dictId, { word, translation, example });
+
+    try {
+        if (editWordId && editDictId) {
+            await api.updateWord(editDictId, editWordId, { word, translation, example });
+        } else {
+            await api.addWord(dictId, { word, translation, example });
+        }
+        closeModal();
+        await loadDictionaries();
+        await loadVocabulary();
+    } catch (err) {
+        alert("Ошибка сохранения: " + err.message);
     }
-    
-    closeModal();
-    await loadDictionaries();
-    await loadVocabulary();
-    updateAchievements();
 }
 
 function openModal() {
@@ -334,46 +353,48 @@ async function createDictionary() {
         alert('Введите название словаря');
         return;
     }
-    await api.createDictionary(name);
-    closeCreateDictModal();
-    await loadDictionaries();
-    await loadVocabulary();
-    updateAchievements();
-}
-
-function openRenameDictModal(dictId, currentName) {
-    const newName = prompt('Введите новое название:', currentName);
-    if (newName && newName.trim()) {
-        renameDictionary(dictId, newName.trim());
+    try {
+        await api.createDictionary(name);
+        closeCreateDictModal();
+        await loadDictionaries();
+        await loadVocabulary();
+    } catch (err) {
+        alert("Ошибка создания: " + err.message);
     }
 }
 
-async function renameDictionary(dictId, newName) {
-    await api.renameDictionary(dictId, newName);
-    await loadDictionaries();
-    await loadVocabulary();
-    updateAchievements();
+async function openRenameDictModal(dictId, currentName) {
+    const newName = prompt('Введите новое название:', currentName);
+    if (newName && newName.trim()) {
+        try {
+            await api.renameDictionary(dictId, newName.trim());
+            await loadDictionaries();
+            await loadVocabulary();
+        } catch (err) {
+            alert("Ошибка переименования: " + err.message);
+        }
+    }
 }
 
-async function openTestSettings() {
+// ---------------------------------------------------------------------------
+// Тестирование (внутреннее)
+// ---------------------------------------------------------------------------
+function openTestSettings() {
     if (allDictionaries.length === 0) {
         alert('Нет доступных словарей. Сначала создайте словарь.');
         return;
     }
-    
+
     let hasWords = false;
     for (const dict of allDictionaries) {
-        if (dict.words.length > 0) {
-            hasWords = true;
-            break;
-        }
+        if (dict.words.length > 0) { hasWords = true; break; }
     }
-    
+
     if (!hasWords) {
         alert('В словарях нет слов. Добавьте слова перед тестированием.');
         return;
     }
-    
+
     updateDictSelects();
     document.getElementById('testSettingsModal').classList.add('active');
 }
@@ -385,23 +406,22 @@ function closeTestSettingsModal() {
 function startTest() {
     const selectedTestDicts = Array.from(document.querySelectorAll('#dictsForTest input:checked'))
         .map(cb => cb.value);
-    
+
     if (selectedTestDicts.length === 0) {
         alert('Выберите хотя бы один словарь для тестирования');
         return;
     }
-    
+
     const questionMode = document.getElementById('questionMode').value;
-    
     const countType = document.getElementById('testCountType').value;
     let questionsCount;
-    
+
     let totalAvailableWords = 0;
     for (const dictId of selectedTestDicts) {
         const dict = allDictionaries.find(d => d.id == dictId);
         if (dict) totalAvailableWords += dict.words.length;
     }
-    
+
     if (countType === 'preset') {
         const presetValue = document.getElementById('testCountPreset').value;
         if (presetValue === 'all') {
@@ -417,18 +437,21 @@ function startTest() {
         }
         questionsCount = customValue;
     }
-    
+
     if (questionsCount > totalAvailableWords) {
-        alert(`Вы выбрали ${questionsCount} слов, но в выбранных словарях только ${totalAvailableWords} слов. Уменьшите количество или выберите больше словарей.`);
+        alert(`Вы выбрали ${questionsCount} слов, но в выбранных словарях только ${totalAvailableWords} слов.`);
         return;
     }
-    
+
     const testMode = document.getElementById('testMode').value;
-    
+
     closeTestSettingsModal();
     window.location.href = `test.html?count=${questionsCount}&mode=${testMode}&dicts=${selectedTestDicts.join(',')}&questionMode=${questionMode}`;
 }
 
+// ---------------------------------------------------------------------------
+// Импорт / очистка
+// ---------------------------------------------------------------------------
 function openImportModal() {
     document.getElementById('importFile').value = '';
     document.getElementById('importText').value = '';
@@ -444,64 +467,43 @@ async function importWords() {
     const fileInput = document.getElementById('importFile');
     const textArea = document.getElementById('importText').value;
     let content = '';
-    
-    if (fileInput.files && fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        try {
-            content = await readFile(file);
-        } catch (error) {
-            alert('Ошибка при чтении файла: ' + error.message);
+
+    const processContent = async (text) => {
+        const words = parseImportContent(text);
+        if (words.length === 0) {
+            alert('Не найдено слов для импорта. Проверьте формат: слово|перевод|пример');
             return;
         }
+        try {
+            await api.bulkImportWords(dictId, words);
+            closeImportModal();
+            await loadDictionaries();
+            await loadVocabulary();
+        } catch (err) {
+            alert("Ошибка импорта: " + err.message);
+        }
+    };
+
+    if (fileInput.files && fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (e) => processContent(e.target.result);
+        reader.onerror = () => alert('Ошибка при чтении файла');
+        reader.readAsText(fileInput.files[0], 'UTF-8');
     } else if (textArea.trim()) {
-        content = textArea;
+        await processContent(textArea);
     } else {
         alert('Выберите файл или введите текст для импорта');
-        return;
     }
-    
-    const words = parseImportContent(content);
-    
-    if (words.length === 0) {
-        alert('Не найдено слов для импорта. Проверьте формат: слово|перевод|пример');
-        return;
-    }
-    
-    for (const wordData of words) {
-        if (wordData.word && wordData.translation) {
-            await api.addWordToDict(dictId, {
-                word: wordData.word,
-                translation: wordData.translation,
-                example: wordData.example || ''
-            });
-        }
-    }
-    
-    closeImportModal();
-    await loadDictionaries();
-    await loadVocabulary();
-    updateAchievements();
-}
-
-function readFile(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = (e) => reject(e.target.error);
-        reader.readAsText(file, 'UTF-8');
-    });
 }
 
 function parseImportContent(content) {
     const lines = content.split(/\r?\n/);
     const words = [];
-    
+
     for (let line of lines) {
         line = line.trim();
         if (line === '' || line.startsWith('#')) continue;
-        
         const parts = line.split('|');
-        
         if (parts.length >= 2) {
             words.push({
                 word: parts[0].trim(),
@@ -510,7 +512,7 @@ function parseImportContent(content) {
             });
         }
     }
-    
+
     return words;
 }
 
@@ -523,23 +525,25 @@ function closeClearConfirmModal() {
 }
 
 async function clearAllWords() {
-    for (const dictId of selectedDicts) {
-        const dict = allDictionaries.find(d => d.id === dictId);
-        if (dict) {
-            for (const word of dict.words) {
-                await api.deleteWordFromDict(word.id, dictId);
+    try {
+        for (const dictId of selectedDicts) {
+            const dict = allDictionaries.find(d => d.id === dictId);
+            if (dict) {
+                for (const word of dict.words) {
+                    await api.deleteWord(dictId, word.id);
+                }
             }
         }
+        closeClearConfirmModal();
+        await loadDictionaries();
+        await loadVocabulary();
+    } catch (err) {
+        alert("Ошибка очистки: " + err.message);
     }
-    
-    closeClearConfirmModal();
-    await loadDictionaries();
-    await loadVocabulary();
-    updateAchievements();
 }
 
 function escapeHtml(text) {
     const div = document.createElement('div');
-    div.textContent = text;
+    div.textContent = text == null ? "" : text;
     return div.innerHTML;
 }

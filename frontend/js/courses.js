@@ -1,81 +1,74 @@
-let currentSearch = '';
+// frontend/js/courses.js
+// Каталог курсов: загрузка с реального API, поиск, прогресс, переход к курсу.
 
-const coursesData = [
-    {
-        id: 1,
-        title: "Английский язык. Введение",
-        description: "Изучите основы английского языка: алфавит, местоимения и базовую грамматику",
-        level: "beginner",
-        lessons: 1,
-        image: "assets/images/english-course.jpg"
-    },
-    {
-        id: 2,
-        title: "Английский язык. Времена",
-        description: "Изучите времена английского языка: Present, Past, Future",
-        level: "intermediate",
-        lessons: 2,
-        image: "assets/images/english-course.jpg"
-    }
-];
+let allCourses = [];
+let currentSearch = "";
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderCourses();
-    
-    const needCheck = localStorage.getItem('language_check_achievements');
-    if (needCheck === 'true') {
-        localStorage.removeItem('language_check_achievements');
-        import('./achievements.js').then(module => {
-            module.updateAchievements();
-        });
-    }
-    
-    document.getElementById('searchBtn').onclick = () => {
-        currentSearch = document.getElementById('searchInput').value.toLowerCase();
-        renderCourses();
-    };
-    
-    document.getElementById('searchInput').onkeyup = (e) => {
-        if (e.key === 'Enter') {
-            currentSearch = e.target.value.toLowerCase();
-            renderCourses();
-        }
-    };
-});
+document.addEventListener("DOMContentLoaded", async () => {
+    const container = document.getElementById("coursesContainer");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
 
-function getCourseProgress(courseId) {
-    const completedLessons = JSON.parse(localStorage.getItem('language_completed_lessons') || '{}');
-    const course = coursesData.find(c => c.id === courseId);
-    if (!course) return 0;
-    
-    const completed = completedLessons[courseId] || [];
-    return Math.round((completed.length / course.lessons) * 100);
-}
-
-function renderCourses() {
-    let filteredCourses = [...coursesData];
-    
-    if (currentSearch) {
-        filteredCourses = filteredCourses.filter(course => 
-            course.title.toLowerCase().includes(currentSearch) || 
-            course.description.toLowerCase().includes(currentSearch)
-        );
-    }
-    
-    const container = document.getElementById('coursesContainer');
-    
-    if (filteredCourses.length === 0) {
-        container.innerHTML = '<div class="empty-state">Курсы не найдены</div>';
+    if (!api.isAuthenticated()) {
+        container.innerHTML =
+            '<div class="empty-state">Войдите, чтобы увидеть курсы</div>';
         return;
     }
-    
-    container.innerHTML = filteredCourses.map(course => {
-        const progress = getCourseProgress(course.id);
-        const lessonsText = getLessonsText(course.lessons);
-        return `
+
+    try {
+        allCourses = await api.getCourses();
+    } catch (err) {
+        container.innerHTML = `<div class="empty-state">Ошибка загрузки: ${escapeHtml(err.message)}</div>`;
+        return;
+    }
+
+    renderCourses();
+
+    const doSearch = () => {
+        currentSearch = (searchInput.value || "").trim().toLowerCase();
+        renderCourses();
+    };
+    searchBtn.addEventListener("click", doSearch);
+    searchInput.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") doSearch();
+    });
+});
+
+function renderCourses() {
+    const container = document.getElementById("coursesContainer");
+
+    let filtered = [...allCourses];
+    if (currentSearch) {
+        filtered = filtered.filter(
+            (c) =>
+                (c.title || "").toLowerCase().includes(currentSearch) ||
+                (c.description || "").toLowerCase().includes(currentSearch)
+        );
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML =
+            '<div class="empty-state">Курсы не найдены</div>';
+        return;
+    }
+
+    container.innerHTML = filtered
+        .map((course) => {
+            const totalLessons = course.lessons_count || 0;
+            const lessonsText = getLessonsText(totalLessons);
+
+            let progress = 0;
+            let progressLabel = "Не записан";
+            if (course.my_progress != null) {
+                progress = Math.round(course.my_progress);
+                progressLabel = `${progress}%`;
+            }
+
+            return `
             <div class="course-card" data-id="${course.id}">
-                <div class="course-image" style="background-image: url('${course.image}')">
-                    <span class="course-level ${course.level}">${getLevelText(course.level)}</span>
+                <div class="course-image" style="background-image: url('assets/images/english-course.jpg')">
+                    <span class="course-level ${escapeHtml(course.level)}">${getLevelText(course.level)}</span>
+                    ${!course.is_published ? '<span class="course-level draft">черновик</span>' : ""}
                 </div>
                 <div class="course-content">
                     <h3 class="course-title">${escapeHtml(course.title)}</h3>
@@ -86,7 +79,7 @@ function renderCourses() {
                     <div class="course-progress">
                         <div class="progress-label">
                             <span>Прогресс</span>
-                            <span>${progress}%</span>
+                            <span>${progressLabel}</span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progress}%"></div>
@@ -96,43 +89,36 @@ function renderCourses() {
                         Перейти к курсу
                     </button>
                 </div>
-            </div>
-        `;
-    }).join('');
-    
-    document.querySelectorAll('.btn-course, .course-card').forEach(el => {
-        el.addEventListener('click', (e) => {
+            </div>`;
+        })
+        .join("");
+
+    document.querySelectorAll(".btn-course").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
             e.stopPropagation();
-            const card = el.closest('.course-card');
-            if (card) {
-                const courseId = card.dataset.id;
-                window.location.href = `course-detail.html?id=${courseId}`;
-            }
+            const courseId = btn.dataset.id;
+            window.location.href = `course-detail.html?id=${courseId}`;
         });
     });
 }
 
-function getLessonsText(lessons) {
-    if (lessons === 1) {
-        return '1 урок';
-    } else if (lessons >= 2 && lessons <= 4) {
-        return `${lessons} урока`;
-    } else {
-        return `${lessons} уроков`;
-    }
+function getLessonsText(n) {
+    if (n === 1) return "1 урок";
+    if (n >= 2 && n <= 4) return `${n} урока`;
+    return `${n} уроков`;
 }
 
 function getLevelText(level) {
     const levels = {
-        beginner: 'Начинающий',
-        intermediate: 'Средний',
-        advanced: 'Продвинутый'
+        beginner: "Начинающий",
+        intermediate: "Средний",
+        advanced: "Продвинутый",
     };
-    return levels[level] || level;
+    return levels[level] || level || "—";
 }
 
 function escapeHtml(text) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
 }

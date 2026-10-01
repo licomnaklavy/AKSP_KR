@@ -43,14 +43,15 @@
 }
 
 .test-word {
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: var(--primary);
-    margin-bottom: 40px;
-    padding: 20px;
-    background: var(--bg);
-    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-align: left;
+    color: var(--dark);
+    margin-bottom: 30px;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    line-height: 1.5;
 }
 
 .test-options {
@@ -76,6 +77,11 @@
     background: rgba(108, 92, 231, 0.05);
 }
 
+.test-option.selected {
+    border-color: var(--primary);
+    background: rgba(108, 92, 231, 0.08);
+}
+
 .test-option input {
     position: absolute;
     opacity: 0;
@@ -83,7 +89,8 @@
     height: 0;
 }
 
-.test-option label {
+.test-option label,
+.test-option > span {
     display: flex;
     align-items: center;
     padding: 15px 20px;
@@ -106,7 +113,8 @@
     flex-shrink: 0;
 }
 
-.test-option input:checked + label::before {
+.test-option input:checked + label::before,
+.test-option input:checked + span::before {
     background: var(--primary);
     border-color: var(--primary);
     box-shadow: inset 0 0 0 3px white;
@@ -136,7 +144,7 @@
 
 .test-actions {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     gap: 15px;
     margin-top: 20px;
 }
@@ -192,50 +200,8 @@
 
 .result-message {
     font-size: 1.1rem;
-    color: var(--gray-dark);
-    margin-bottom: 30px;
-}
-
-.test-mistakes {
-    text-align: left;
-    margin: 30px 0;
-    padding: 20px;
-    background: var(--bg);
-    border-radius: 12px;
-}
-
-.test-mistakes h3 {
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-}
-
-.mistakes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.mistake-item {
-    padding: 10px;
-    background: var(--white);
-    border-radius: 8px;
-    font-size: 0.9rem;
-}
-
-.mistake-word {
-    font-weight: 600;
     color: var(--dark);
-}
-
-.mistake-correct {
-    color: var(--success);
-    font-weight: 500;
-}
-
-.mistake-wrong {
-    color: var(--danger);
-    font-size: 0.85rem;
-    margin-left: 8px;
+    margin-bottom: 30px;
 }
 
 .result-actions {
@@ -266,28 +232,29 @@
     .test-card {
         padding: 25px;
     }
-    
+
     .test-word {
-        font-size: 1.8rem;
+        font-size: 1.1rem;
     }
-    
-    .test-option label {
+
+    .test-option label,
+    .test-option > span {
         padding: 12px 15px;
         font-size: 0.9rem;
     }
-    
+
     .score-number {
         font-size: 2.5rem;
     }
-    
+
     .result-actions {
         flex-direction: column;
     }
-    
+
     .result-actions .btn {
         width: 100%;
     }
-    
+
     .test-header {
         flex-direction: column;
         text-align: center;

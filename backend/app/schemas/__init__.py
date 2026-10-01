@@ -57,6 +57,8 @@ class CourseOut(BaseModel):
     is_published: bool
     author_id: int
     created_at: datetime
+    lessons_count: int = 0
+    my_progress: float | None = None
 
 
 # ---------- Lessons ----------
@@ -121,6 +123,9 @@ class TestOut(BaseModel):
     passing_score: float
     created_at: datetime
     questions: list[QuestionOut]
+    my_best_percent: float | None = None
+    my_best_score: float | None = None
+    my_max_score: float | None = None
 
 
 # ---------- Attempts ----------
@@ -177,3 +182,55 @@ class StudentProgressRow(BaseModel):
     completed_lessons: int
     total_lessons: int
     average_percent: float
+
+
+# ---------- Dictionaries ----------
+class WordCreate(BaseModel):
+    word: str
+    translation: str
+    example: str = ""
+
+
+class WordUpdate(BaseModel):
+    word: str | None = None
+    translation: str | None = None
+    example: str | None = None
+
+
+class WordOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    dictionary_id: int
+    word: str
+    translation: str
+    example: str
+
+
+class DictionaryCreate(BaseModel):
+    name: str
+
+
+class DictionaryUpdate(BaseModel):
+    name: str | None = None
+
+
+class DictionaryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    owner_id: int
+    created_at: datetime
+    words: list[WordOut] = []
+
+
+class DictionaryShort(BaseModel):
+    """Словарь без слов — для списочных ответов, где слова не нужны."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    owner_id: int
+    created_at: datetime
+    words_count: int = 0

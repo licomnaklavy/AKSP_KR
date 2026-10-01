@@ -32,6 +32,9 @@ class User(Base):
     attempts: Mapped[list["TestAttempt"]] = relationship(
         back_populates="student", cascade="all, delete-orphan"
     )
+    dictionaries: Mapped[list["Dictionary"]] = relationship(
+        back_populates="owner", cascade="all, delete-orphan"
+    )
 
 
 class Course(Base):
@@ -78,7 +81,7 @@ class Enrollment(Base):
     student_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     course_id: Mapped[int] = mapped_column(ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
     enrolled_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-    completed_lesson_ids: Mapped[str] = mapped_column(Text, default="")  # CSV id уроков
+    completed_lesson_ids: Mapped[str] = mapped_column(Text, default="")
 
     student: Mapped[User] = relationship(back_populates="enrollments")
     course: Mapped[Course] = relationship(back_populates="enrollments")
@@ -161,3 +164,36 @@ class TestAnswer(Base):
     points_awarded: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
 
     attempt: Mapped[TestAttempt] = relationship(back_populates="answers")
+
+
+# ---------- Dictionaries ----------
+class Dictionary(Base):
+    __tablename__ = "dictionaries"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    owner_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    owner: Mapped[User] = relationship(back_populates="dictionaries")
+    words: Mapped[list["Word"]] = relationship(
+        back_populates="dictionary",
+        cascade="all, delete-orphan",
+        order_by="Word.id",
+    )
+
+
+class Word(Base):
+    __tablename__ = "words"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    dictionary_id: Mapped[int] = mapped_column(
+        ForeignKey("dictionaries.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    word: Mapped[str] = mapped_column(String(255), nullable=False)
+    translation: Mapped[str] = mapped_column(String(255), nullable=False)
+    example: Mapped[str] = mapped_column(Text, default="")
+
+    dictionary: Mapped[Dictionary] = relationship(back_populates="words")

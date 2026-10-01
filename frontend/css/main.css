@@ -72,6 +72,7 @@ body {
 .nav {
     display: flex;
     gap: 20px;
+    align-items: center;
 }
 
 .nav-link {
@@ -122,6 +123,11 @@ body {
     color: var(--white);
 }
 
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .form-input {
     width: 100%;
     padding: 10px 12px;
@@ -163,6 +169,7 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 20px;
 }
 
 .modal.active {
@@ -174,6 +181,9 @@ body {
     border-radius: 12px;
     width: 90%;
     max-width: 450px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
@@ -182,6 +192,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .modal-header h3 {
@@ -202,6 +213,9 @@ body {
 
 .modal-body {
     padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
 }
 
 .footer {
@@ -217,12 +231,12 @@ body {
     .nav {
         gap: 10px;
     }
-    
+
     .nav-link {
         font-size: 0.8rem;
         padding: 5px 8px;
     }
-    
+
     .modal-content {
         width: 95%;
     }
@@ -308,34 +322,66 @@ body {
         max-width: none;
         padding: 14px 20px;
     }
-    
+
     .notification-icon {
         font-size: 1.5rem;
     }
-    
+
     .notification-name {
         font-size: 0.9rem;
     }
 }
 
-@keyframes notificationSlideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+/* ---- Header user area ---- */
+.nav-user-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px 4px 12px;
+    background: var(--bg);
+    border-radius: 999px;
+    font-size: 0.85rem;
 }
 
-@keyframes notificationSlideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
+.nav-user-name {
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.nav-user-role {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--gray-light);
+    color: var(--dark);
+}
+
+.nav-user-role-teacher {
+    background: rgba(108, 92, 231, 0.15);
+    color: var(--primary);
+}
+
+.nav-user-role-admin {
+    background: rgba(214, 48, 49, 0.15);
+    color: var(--danger);
+}
+
+.nav-user-role-student {
+    background: rgba(0, 184, 148, 0.15);
+    color: var(--success);
+}
+
+.nav-logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--dark);
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.nav-logout-btn:hover {
+    background: var(--gray-light);
 }

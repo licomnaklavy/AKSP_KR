@@ -95,6 +95,55 @@ def create_test(
     return test
 
 
+# ---------- Получить все тесты урока + мои результаты ----------
+@router.get("/by-lesson/{lesson_id}", response_model=list[TestOut])
+def get_tests_by_lesson(
+    lesson_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[TestOut]:
+    tests = (
+        db.query(Test)
+        .filter(Test.lesson_id == lesson_id)
+        .order_by(Test.created_at)
+        .all()
+    )
+
+    result: list[TestOut] = []
+    for test in tests:
+        # Ищем лучшую попытку текущего пользователя по этому тесту
+        attempts = (
+            db.query(TestAttempt)
+            .filter(
+                TestAttempt.test_id == test.id,
+                TestAttempt.student_id == current_user.id,
+                TestAttempt.status == "finished",
+                TestAttempt.max_score > 0,
+            )
+            .all()
+        )
+
+        best_percent = None
+        best_score = None
+        best_max_score = None
+        if attempts:
+            def percent_of(a: TestAttempt) -> float:
+                return a.score / a.max_score * 100
+
+            best = max(attempts, key=percent_of)
+            best_percent = round(percent_of(best), 2)
+            best_score = best.score
+            best_max_score = best.max_score
+
+        out = TestOut.model_validate(test)
+        out.my_best_percent = best_percent
+        out.my_best_score = best_score
+        out.my_max_score = best_max_score
+        result.append(out)
+
+    return result
+
+
 # ---------- Просмотр теста ----------
 @router.get("/{test_id}", response_model=TestOut)
 def get_test(

@@ -1,43 +1,73 @@
 .profile-header {
     background: var(--white);
     padding: 30px;
-    border-radius: 12px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin: 30px 0;
+    gap: 25px;
+    margin: 30px 0 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .profile-avatar {
-    font-size: 3rem;
-    background: var(--gray-light);
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--white);
     width: 80px;
     height: 80px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .profile-info h1 {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+    color: var(--dark);
 }
 
 .profile-info p {
     color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.profile-role {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.profile-role.role-student {
+    background: rgba(0, 184, 148, 0.15);
+    color: var(--success-dark);
+}
+
+.profile-role.role-teacher {
+    background: rgba(108, 92, 231, 0.15);
+    color: var(--primary);
+}
+
+.profile-role.role-admin {
+    background: rgba(214, 48, 49, 0.15);
+    color: var(--danger);
 }
 
 .profile-stats-card {
     background: var(--white);
     padding: 25px;
-    border-radius: 12px;
+    border-radius: 16px;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     text-align: center;
     gap: 20px;
     margin-bottom: 30px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .stat-item {
@@ -46,77 +76,121 @@
 
 .stat-value {
     display: block;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary);
+    line-height: 1.2;
 }
 
 .stat-label {
     font-size: 0.8rem;
     color: #666;
+    margin-top: 4px;
+    display: block;
 }
 
-/* Достижения */
-.achievements-section {
+.profile-section {
     background: var(--white);
-    border-radius: 12px;
-    padding: 25px;
+    border-radius: 16px;
+    padding: 25px 30px;
     margin-bottom: 30px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.achievements-section h2 {
-    font-size: 1.3rem;
+.profile-section h2 {
+    font-size: 1.2rem;
     margin-bottom: 20px;
     color: var(--dark);
 }
 
-.achievements-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+.profile-courses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-course-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 18px;
+    background: var(--bg);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s, transform 0.15s;
     gap: 15px;
 }
 
-.achievement-card {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 16px 20px;
-    transition: transform 0.2s;
+.profile-course-row:hover {
+    background: var(--gray-light);
+    transform: translateY(-1px);
 }
 
-.achievement-card:hover {
-    transform: translateY(-2px);
+.profile-course-info {
+    flex: 1;
+    min-width: 0;
 }
 
-.achievement-card.locked {
-    opacity: 0.6;
-}
-
-.achievement-title {
+.profile-course-title {
+    font-size: 0.95rem;
     font-weight: 600;
-    margin-bottom: 6px;
-    font-size: 1rem;
     color: var(--dark);
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.achievement-description {
+.profile-course-meta {
     font-size: 0.8rem;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
-.achievement-progress {
-    margin-top: 10px;
+.profile-course-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
-.achievement-progress .progress-bar {
-    height: 4px;
-    margin-bottom: 5px;
+.profile-course-arrow {
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
-.achievement-progress span {
-    font-size: 0.7rem;
-    color: #999;
+.progress-bar {
+    height: 6px;
+    background: var(--gray-light);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.course-status-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.course-status-badge.published {
+    background: rgba(0, 184, 148, 0.15);
+    color: var(--success-dark);
+}
+
+.course-status-badge.draft {
+    background: var(--gray-light);
+    color: #666;
 }
 
 @media (max-width: 600px) {
@@ -124,13 +198,25 @@
         flex-direction: column;
         text-align: center;
     }
-    
+
     .profile-stats-card {
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
     }
-    
-    .achievements-grid {
-        grid-template-columns: 1fr;
+
+    .stat-value {
+        font-size: 1.4rem;
+    }
+
+    .profile-section {
+        padding: 20px;
+    }
+
+    .profile-course-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-course-right {
+        justify-content: space-between;
     }
 }
