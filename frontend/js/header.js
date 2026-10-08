@@ -3,11 +3,12 @@ async function renderHeaderUser() {
     if (!nav) return;
 
     // --- Проверка авторизации с редиректом ---
-    const PUBLIC_PAGES = ["index.html", "login.html", "register.html"];
-    const currentPage = location.pathname.split("/").pop() || "index.html";
+    // Публичные страницы, доступные без входа
+    const PUBLIC_PATHS = ["/", "/index.html", "/login.html", "/register.html"];
+    const currentPath = location.pathname;
 
-    if (!api.isAuthenticated() && !PUBLIC_PAGES.includes(currentPage)) {
-        window.location.href = "login.html";
+    if (!api.isAuthenticated() && !PUBLIC_PATHS.includes(currentPath)) {
+        window.location.href = "/login.html";
         return;
     }
     // --- конец проверки ---
@@ -15,13 +16,13 @@ async function renderHeaderUser() {
     // --- Очистка от предыдущих запусков и статичных элементов ---
     nav.querySelectorAll(".nav-user-btn").forEach((el) => el.remove());
     nav.querySelectorAll(".nav-logout-btn").forEach((el) => el.remove());
+    nav.querySelectorAll('a[href="/profile.html"]').forEach((el) => el.remove());
     nav.querySelectorAll('a[href="profile.html"]').forEach((el) => el.remove());
     nav.querySelectorAll('button[data-nav="logout"]').forEach((el) => el.remove());
 
     // --- Управление видимостью статичных ссылок ---
-    // Для неавторизованного пользователя скрываем "Курсы" и "Словарь".
     const protectedLinks = nav.querySelectorAll(
-        'a[href="courses.html"], a[href="vocabulary.html"]'
+        'a[href="/courses.html"], a[href="courses.html"], a[href="/vocabulary.html"], a[href="vocabulary.html"]'
     );
 
     if (!api.isAuthenticated()) {
@@ -38,7 +39,7 @@ async function renderHeaderUser() {
     // --- Отрисовка правой части ---
     if (!api.isAuthenticated()) {
         const loginLink = document.createElement("a");
-        loginLink.href = "login.html";
+        loginLink.href = "/login.html";
         loginLink.className = "nav-link nav-user-btn";
         loginLink.textContent = "Войти";
         nav.appendChild(loginLink);
@@ -50,7 +51,7 @@ async function renderHeaderUser() {
         user = await api.me();
     } catch (_) {
         const loginLink = document.createElement("a");
-        loginLink.href = "login.html";
+        loginLink.href = "/login.html";
         loginLink.className = "nav-link nav-user-btn";
         loginLink.textContent = "Войти";
         nav.appendChild(loginLink);
@@ -58,9 +59,9 @@ async function renderHeaderUser() {
     }
 
     // Ссылка "Профиль" с подсветкой активной страницы
-    const isOnProfile = location.pathname.endsWith("profile.html");
+    const isOnProfile = location.pathname.endsWith("/profile.html");
     const profileLink = document.createElement("a");
-    profileLink.href = "profile.html";
+    profileLink.href = "/profile.html";
     profileLink.className = isOnProfile
         ? "nav-link nav-user-btn active"
         : "nav-link nav-user-btn";
@@ -73,7 +74,7 @@ async function renderHeaderUser() {
     logoutBtn.textContent = "Выйти";
     logoutBtn.onclick = () => {
         api.logout();
-        window.location.href = "index.html";
+        window.location.href = "/index.html";
     };
 
     // Блок с именем и ролью

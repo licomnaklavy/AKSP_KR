@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Курсы - Лангуаге</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/courses.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/courses.css">
 </head>
 <body>
     <div class="app">
         <header class="header">
             <div class="container">
                 <div class="header-content">
-                    <a href="index.html" class="logo-link">
+                    <a href="/index.html" class="logo-link">
                         <span class="logo-icon">🌐</span>
                         <span class="logo-text">Лангуаге</span>
                     </a>
                     <nav class="nav">
-                        <a href="index.html" class="nav-link">Главная</a>
-                        <a href="courses.html" class="nav-link active">Курсы</a>
-                        <a href="vocabulary.html" class="nav-link">Словарь</a>
+                        <a href="/index.html" class="nav-link">Главная</a>
+                        <a href="/courses.html" class="nav-link active">Курсы</a>
+                        <a href="/vocabulary.html" class="nav-link">Словарь</a>
                     </nav>
                 </div>
             </div>
@@ -30,6 +30,15 @@
                 <div class="page-header">
                     <h1>Курсы</h1>
                     <p>Выберите язык для изучения</p>
+                </div>
+
+                <!-- Блок управления для teacher/admin. Показывается через JS. -->
+                <div id="teacherPanel" style="display:none;">
+                    <div class="teacher-courses-header">
+                        <h2>Управление курсами</h2>
+                        <button class="btn btn-primary" id="createCourseBtn">+ Создать курс</button>
+                    </div>
+                    <div class="teacher-courses-list" id="teacherCoursesList"></div>
                 </div>
 
                 <div class="courses-controls">
@@ -52,8 +61,8 @@
         </footer>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/header.js"></script>
-    <script src="js/courses.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/courses.js"></script>
 </body>
 </html>

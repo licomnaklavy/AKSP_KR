@@ -120,14 +120,6 @@
     background: var(--danger);
 }
 
-.course-level.draft {
-    background: var(--gray);
-    color: var(--white);
-    top: 12px;
-    right: auto;
-    left: 12px;
-}
-
 .course-content {
     padding: 20px;
     display: flex;
@@ -203,6 +195,89 @@
     grid-column: 1 / -1;
 }
 
+/* ---- Блок управления курсами для teacher'а ---- */
+#teacherPanel {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 25px 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.teacher-courses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.teacher-courses-header h2 {
+    font-size: 1.15rem;
+    margin: 0;
+    color: var(--dark);
+}
+
+.teacher-courses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.teacher-course-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.teacher-course-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.teacher-course-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.teacher-course-meta {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.teacher-course-meta .status {
+    font-weight: 500;
+}
+
+.teacher-course-meta .status.published {
+    color: var(--success-dark);
+}
+
+.teacher-course-meta .status.draft {
+    color: var(--gray);
+}
+
+.teacher-course-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
 @media (max-width: 600px) {
     .courses-grid {
         grid-template-columns: 1fr;
@@ -224,5 +299,27 @@
     .course-meta {
         font-size: 0.75rem;
         gap: 10px;
+    }
+
+    #teacherPanel {
+        padding: 20px;
+    }
+
+    .teacher-courses-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .teacher-course-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .teacher-course-actions {
+        justify-content: stretch;
+    }
+
+    .teacher-course-actions .btn {
+        flex: 1;
     }
 }
